@@ -7,7 +7,7 @@ Given a 32-bit signed integer, reverse digits of an integer.
 The input is an integer with base 10. Using x % 10 can get the tail digit, and x /= 10 get the "rest digit".  
   
 However, the problem require us to deal with the overflow by our own. Because it is a 32-bit signed integer, so
-the range of input value is [$-2^(31),2^(31)-1$]. $2^(31)-1\=2147483647$, so make sure rev < INT_MAX/10 or rev == INT_MAX/10 and
+the range of input value is [$-2^{31},2^{31}-1$]. $2^{31}-1\=2147483647$, so make sure rev < INT_MAX/10 or rev == INT_MAX/10 and
 x%10 > 7 if x>0. If x < 0, just translate it into positive.
 
 ## How To (In C++)
