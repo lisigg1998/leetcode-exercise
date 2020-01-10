@@ -62,6 +62,7 @@ Recursion is a little bit slower because function stack overhead, and the code i
 Suppose the target always exists but there are duplicated elements. There are two situations:  
 1. Find the target element with the smallest index  
 2. Find the target element with the largest index  
+  
 It is actually very simple. In situation 1, just let `j=mid` when `nums[mid]>=target`. By this boundary we are making sure
 that j is approaching to the left most target element.  
 Similarly, let `i=mid` when `nums[mid]<=target` in situation 2. However, the condition to break the while loop should be 
