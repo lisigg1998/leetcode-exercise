@@ -15,15 +15,15 @@ x%10 > 7 if x>0. If x < 0, just translate it into positive.
     int reverse(int x) {
         int rev = 0;
         if(x == INT_MIN) return 0;
-        x = x>0 ? x : -x;
-        while(x) {
-            if(rev > INT_MAX/10 || (rev == INT_MAX/10 && x%10 > 7)) {
+        int n = x>0 ? x : -x;
+        while(n) {
+            if(rev > INT_MAX/10 || (rev == INT_MAX/10 && n%10 > 7)) {
                 return 0;
             }
-            rev = rev * 10 + x%10;
-            x/=10;
+            rev = rev * 10 + n%10;
+            n/=10;
         }
-        return rev>0 ? rev : -rev;
+        return x>0 ? rev : -rev;
     }
 ```
   
