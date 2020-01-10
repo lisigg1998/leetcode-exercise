@@ -109,7 +109,9 @@ int romanToInt(string s) {
         return 0;
     }
 ```
-This method indexes from the tail. **Notice that in the special expressions, the integer value of the second character is larger
-than the value of the first character, and the value of the entire expression is exactly val(s2)-val(s1).** Using this property
-we only need one ternary condition operation.  
+This method indexes from the tail. **Notice that there are some properties for special expressions:**  
+**1. The integer value of the second character is larger than the value of the first character;**  
+**2. An Expression of smaller value is behind an expression of larger value, like XCIV is valid, but IVXC is not;**  
+**3. The value of the entire expression is exactly val(s2)-val(s1);**  
+Using these properties, we only need one ternary condition operation.  
 Also, the type of `str[i]` is `char&`, be careful when passing `str[i]` to a function.
