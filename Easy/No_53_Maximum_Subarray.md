@@ -58,7 +58,7 @@ This problem is an optimization problem, and normally when we see such kind of p
 The original problem can be divided into n subproblems: find the maximum subarray in all maximum subarrays ending with `nums[i]`. Subarrays ending with `nums[i]` covers all situations because one subarray only has one ending. Thus the optimization of the original problem contains the optimization of subproblems.
 ### Recursive definition
 Suppose max length of subarray ending with `nums[i]` is stored in `dp[i]`, where `dp` is another array. `dp[i]` depends on `dp[i-1]`, because `dp[i]` is either `nums[i]` or `nums[i] + dp[i-1]`. Then we have the recursive definition: $dp\[i\]\=max(nums\[i\] + dp\[i-1\], nums\[i\])$.  
-Further more, since we don't need to reconstruct the whole process, and dp[0:i-2] will never be used again, so we even do not need to use an array to store the previous stages.  
+Further more, since we don't need to reconstruct the whole process, and `dp[0:i-2]` will never be used again, so we even do not need to use an array to store the previous stages.  
 **Time Complexity:**  
 The time complexity is $O(n)$.
 
