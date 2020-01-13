@@ -22,13 +22,13 @@ When you think about it, the range of elements are from 0 to n. The sum of the a
 ```C++
     int missingNumber(vector<int>& nums) {
         int result = 0;
-    for (int i = 0; i < nums.size(); ++i) {
-        result += (i+1)-nums[i];
-    }
-    return result;
+        for (int i = 0; i < nums.size(); ++i) {
+            result += (i+1)-nums[i];
+        }
+        return result;
     }
 ```
-In `<numeric>` library of C++, we can use `accumulate(v.begin(),v.end(),0)` to make the code even simpler.  
+The accumulating while subtracting is to **prevent integer overflow** because you don't know how large is n. If need not to worry about overflow, we can use `accumulate(v.begin(),v.end(),0)` in `<numeric>` library of C++ to make the code even simpler.  
 **Time complexity:**  
 $O(n)$. Space complexity is $O(1)$.
 
