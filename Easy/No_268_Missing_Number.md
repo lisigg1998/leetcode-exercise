@@ -57,7 +57,7 @@ Notice the two line:
 ```
 They can unsyncrinize stdio and untie cin so that the input speed is increased.  
 **Time complexity:**  
-The time complexity is $O(n)$, but it is much faster than method 3, because computer do bit manipulations much faster than arithmetic additions.  
+The time complexity is $O(n)$.
 
 
 
