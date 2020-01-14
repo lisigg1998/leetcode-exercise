@@ -14,7 +14,7 @@ Note:
 
 ## How To (In C++)
 ### Mod arithmetic without overflow  
-For mod arithmetic, there is a fact that $(ab+c)\%d\=((a\%d)(b\%d)+(c\%d))\%d$.  
+For mod arithmetic, there is a fact that `(ab+c)%d=((a%d)(b%d)+(c%d))%d`.  
   
 The problem requires us to calculate about `A[0:i]`, and we know that `A[0:i] = A[0:i-1] * 2 + A[i]`(here we use `A[0:i]` to represent the ith binary number with the digit sequence `A[0:i]`). Using the mod arithmetic fact stated above, we know `A[0:i]%5 = ((A[0:i-1]%5) * 2 + A[i]) % 5`. And thus we have the code:  
 ```C++
