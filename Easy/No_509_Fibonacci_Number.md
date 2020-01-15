@@ -45,6 +45,27 @@ $O(n)$, because in this case we only generate n times of recursion.
   
 **Space complexity:**  
 $O(n)$, because the number of function stacks is still n.  
-### 3. math methods
+### 3. no recursion method
+Using only loop, we can calculate `fib(n)` from bottom to top:
+```C++
+int fib(int N) {
+    if(N==0) return 0;
+    if(N==1) return 1;
+    int res, n1=1, n2=0;
+    for(int i = 2; i <= N; i++){
+        res = n1+n2;
+        n2=n1;
+        n1=res;
+    }
+    return res;
+    }
+ ```
+ **Time complexity:**  
+$O(n)$.
+  
+**Space complexity:**  
+$O(1)$.
+
+### 4. math methods
 Use the math formula to directly calculate `fib(n)`, or use a matrix exponential method. see this [link](https://leetcode.com/problems/fibonacci-number/solution/).  
 
