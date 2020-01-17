@@ -38,7 +38,7 @@ int hammingWeight(uint32_t n) {
 This method uses the feature that **n & (n-1) will flip the least significant bit, namely the lowest 1 bit**.  
   
 **Time complexity:**  
-$O(1)$, because the input digits of bits is fixed.  
+$O(1)$, because the input number of bits is fixed.  
 **Space complexity:**  
 $O(1)$.
 
