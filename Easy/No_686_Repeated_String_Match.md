@@ -1,90 +1,62 @@
 No.686 Repeated String Match
 =========
-Say you have an array for which the ith element is the price of a given stock on day i.
+Given two strings `A` and `B`, find the minimum number of times A has to be repeated such that B is a substring of it. If no such solution, return -1.
 
-Design an algorithm to find the maximum profit. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times).
+For example, with `A` = "abcd" and `B` = "cdabcdab".
 
-Note: You may not engage in multiple transactions at the same time (i.e., you must sell the stock before you buy again).
+Return 3, because by repeating `A` three times (“abcdabcdabcd”), `B` is a substring of it; and `B` is not a substring of `A` repeated two times ("abcdabcd").
 
-Example 1:
-```
-Input: [7,1,5,3,6,4]
-Output: 7
-Explanation: Buy on day 2 (price = 1) and sell on day 3 (price = 5), profit = 5-1 = 4.
-             Then buy on day 4 (price = 3) and sell on day 5 (price = 6), profit = 6-3 = 3.
-```
-Example 2:
-```
-Input: [1,2,3,4,5]
-Output: 4
-Explanation: Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.
-             Note that you cannot buy on day 1, buy on day 2 and sell them later, as you are
-             engaging multiple transactions at the same time. You must sell before buying again.
-```
-Example 3:
-```
-Input: [7,6,4,3,1]
-Output: 0
-Explanation: In this case, no transaction is done, i.e. max profit = 0.
-```
+Note:
+The length of `A` and `B` will be between 1 and 10000.
 
 ## Problem Analysis  
 
-This problem can be solved in multiple ways. But the most straightforward and simple solution is the peak-and-valley one.  
+Many languages has build-in methods for finding substrings, so this should not be the problem (interestingly, many people in the leetcode discussion area, even in the solution area tried to optimize this). The problem is how to properly count repeating times?  
 
-## How To (In C++ & Java)
+Assume that `q` is the minimum number that `len(A*q) >= len(B)`. We just need to do `find substring` operation in `q` and `q+1` repeating times situation. When `repeating times < q`, B cannot be the substring of A. If `repeating times == q+1` but B still cannot be the substring of `A * (q+1)`, more repeating times are meaningless.  
+
+## How To (In C++)
 ### 1. Brute force
-```Java
-class Solution {
-    public int maxProfit(int[] prices) {
-        return calculate(prices, 0);
-    }
-
-    public int calculate(int prices[], int s) {
-        if (s >= prices.length)
-            return 0;
-        int max = 0;
-        for (int start = s; start < prices.length; start++) {
-            int maxprofit = 0;
-            for (int i = start + 1; i < prices.length; i++) {
-                if (prices[start] < prices[i]) {
-                    int profit = calculate(prices, i + 1) + prices[i] - prices[start];
-                    if (profit > maxprofit)
-                        maxprofit = profit;
-                }
-            }
-            if (maxprofit > max)
-                max = maxprofit;
-        }
-        return max;
-    }
-}
-```
-**Time complexity:**  
-   
-$O(n^n)$.  
-
-**Space complexity:**  
-
-$O(n)$.  
-
-### 2. peak and valley
 ```C++
-int maxProfit(vector<int>& prices) {
-    ios_base::sync_with_stdio(false);
-    cin.tie(0);
-    if(prices.empty() || prices.size() == 1) return 0;
-    int sum=0;
-    for(int i = 0; i < prices.size()-1; i++){
-        sum += max((prices[i+1] - prices[i]),0);
+int repeatedStringMatch(string A, string B) {
+    vector<int> lettersA(26, 0), lettersB(26, 0);
+        for(char& i : A)
+            lettersA[i - 'a']++;
+        for(char& i : B) 
+            lettersB[i - 'a']++;
+        for(int i = 0; i < 26; i++)
+            if(lettersB[i]>0 && lettersA[i]==0) return -1;
+    string a = A;
+    int repeat = 1;
+    while(a.size() < B.size()){
+        a += A;
+        repeat++;
     }
-    return sum;
+    if(a.find(B) != string::npos){
+        return repeat;
+    }
+    else{
+        a += A;
+        repeat++;
+        if(a.find(B) != string::npos){
+            return repeat;
+        }
+        else
+            return -1;
+    }
+    return -1;
 }
 ```
+First, we can do a simple check-out to sift most of the false cases. If B contains character that does not appear in A, then return -1 directly. Then find out `q` and check situation `q` and `q+1`.  
+
 **Time complexity:**  
    
-$O(n)$.  
+$O(mqn)$. `find()` method consumes $O(mn)$ time, and the length of `a` is `m * q`.  
 
 **Space complexity:**  
 
-$O(1)$.  
+$O(mq)$, since we create `a`.  
+
+### 2. Optimized way
+Many programmer choose to write own KMP substring detection algorithm. If not for OI or interview requirements, this is unnecessary.  
+About KMP: check [this link](https://blog.csdn.net/starstar1992/article/details/54913261).  
