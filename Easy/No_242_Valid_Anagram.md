@@ -45,7 +45,7 @@ $O(m+n)$, where m and n are the size of `s` and `t`.
 
 **Space complexity:**
   
-O(1), since the amount of lower-case letters are limited.  
+$O(1)$, since the amount of lower-case letters are limited.  
 
 ### 2. general case, using map
 If the two strings are in unicode and they are not just lower-case English characters, we can use map instead of fixed-size array:  
@@ -74,5 +74,5 @@ $O(m+n)$, where m and n are the size of `s` and `t`.
 
 **Space complexity:**
   
-O(n), if the "characters" are any kinds of symbols.
+$O(n+m)$, if the "characters" are any kinds of symbols.
     
