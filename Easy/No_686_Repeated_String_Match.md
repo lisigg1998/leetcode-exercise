@@ -58,5 +58,6 @@ $O(mqn)$. `find()` method consumes $O(mn)$ time, and the length of `a` is `m * q
 $O(mq)$, since we create `a`.  
 
 ### 2. Optimized way
-Many programmer choose to write own KMP substring detection algorithm. If not for OI or interview requirements, this is unnecessary.  
+Many programmer choose to write own substring detection algorithm. If not for OI or interview requirements, this is unnecessary.  
 About KMP: check [this link](https://blog.csdn.net/starstar1992/article/details/54913261).  
+About Rabin-Karp: [this link](https://www.ituring.com.cn/article/1759).  
