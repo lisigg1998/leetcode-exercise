@@ -31,6 +31,7 @@ If the string has two or more characters, there are three situations:
 2. If the first character is uppercase and the second character is lowercase, then `word[1:]` should be all lowercase;  
 3. If the first character is lowercase and the second character is lowercase, then `word[1:]` should be all lowercase;  
 4. If the first character is lowercase and the second character is uppercase, return false;  
+  
 We can filter situation 4 in the beginning. Then, we know that **whether the consequtive characters are all lowercase or all uppercase is determined by `word[1]`**.  
 
 ## How To (In C++)
