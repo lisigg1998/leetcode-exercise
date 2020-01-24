@@ -99,7 +99,7 @@ $O(1)$, since the result array does not count, and the map size is limited by th
  }
 ```
 In method 1, we need a tedious function to create a character-row map. The comparison process is not beautiful, either. There is a way to make both better.  
-1. Improve character-row map with vector
+#### 1. Improve character-row map with vector
 Instead of hard-coding a map, we can use a terse method, although it is still hard-coding. 
 ```C++
 vector<int> dict(26);
@@ -109,7 +109,8 @@ for (int i = 0; i < rows.size(); i++) {
 }
 ```
 Each position of `dict` stands for each character. We put characters on the same row into one single word. Then we use bit manipulation to give each character a "row number". "Row number" are binary number 001, 010 and 100. There is a feature that applying `&` operator to any two of them will result in 0. This feature will later help us do comparison.  
-2. Improve comparison with bit manipulation
+  
+#### 2. Improve comparison with bit manipulation
 ```C++
 for (auto w : words) {
     int r = 7;
