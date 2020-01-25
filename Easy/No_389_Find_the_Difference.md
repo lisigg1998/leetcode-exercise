@@ -14,11 +14,11 @@ t = "abcde"
 
 Output:
 e
-```
+
 Explanation:  
   
 'e' is the letter that was added.  
-
+```
 ## Problem Analysis  
 
 There is only one difference, and the elements' range is fixed (all are lowercase letters), so we can use counting array. Furthermore, we can use "sort + two pointers" or even bit manipulation to solve this problem.   
