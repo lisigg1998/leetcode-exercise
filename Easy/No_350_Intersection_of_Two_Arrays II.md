@@ -1,22 +1,28 @@
-No.219 Contains Duplicate II
+No.350 Intersection of Two Arrays II
 =========
-Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+Given two arrays, write a function to compute their intersection.  
 
-Example 1:
-```
-Input: nums = [1,2,3,1], k = 3
-Output: true
-```
-Example 2:
-```
-Input: nums = [1,0,1,1], k = 1
-Output: true
-```
-Example 3:
-```
-Input: nums = [1,2,3,1,2,3], k = 2
-Output: false
-```
+Example 1:  
+``
+Input: nums1 = [1,2,2,1], nums2 = [2,2]
+Output: [2,2]
+``
+Example 2:  
+``
+Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+Output: [4,9]
+``
+Note:  
+
+Each element in the result should appear as many times as it shows in both arrays.  
+The result can be in any order.  
+
+Follow up:  
+
+1.What if the given array is already sorted? How would you optimize your algorithm?  
+2.What if nums1's size is small compared to nums2's size? Which algorithm is better?  
+3.What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?  
+
 ## Problem Analysis  
 
 First, we need to find duplicated elements. Then, for each sets of duplicated elements, we need to keep their indexes `i` and find out the **minimum difference** of those indexes.  
