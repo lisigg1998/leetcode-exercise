@@ -1,78 +1,116 @@
 No.219 Contains Duplicate II
 =========
-In a list of songs, the i-th song has a duration of time[i] seconds. 
-
-Return the number of pairs of songs for which their total duration in seconds is divisible by 60.  Formally, we want the number of indices i < j with (time[i] + time[j]) % 60 == 0.
-
- 
+Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
 
 Example 1:
 ```
-Input: [30,20,150,100,40]
-Output: 3
-Explanation: Three pairs have a total duration divisible by 60:
-(time[0] = 30, time[2] = 150): total duration 180
-(time[1] = 20, time[3] = 100): total duration 120
-(time[1] = 20, time[4] = 40): total duration 60
+Input: nums = [1,2,3,1], k = 3
+Output: true
 ```
 Example 2:
 ```
-Input: [60,60,60]
-Output: 3
-Explanation: All three pairs have a total duration of 120, which is divisible by 60.
- ```
-
-Note:
-
-1.`1 <= time.length <= 60000`  
-2.`1 <= time[i] <= 500`
-
+Input: nums = [1,0,1,1], k = 1
+Output: true
+```
+Example 3:
+```
+Input: nums = [1,2,3,1,2,3], k = 2
+Output: false
+```
 ## Problem Analysis  
 
-If use brute force, the time complexity will be $O(n^2)$, which is not good. We need to find a $O(n)$ time solution, and this can be done by using a counting array.  
+First, we need to find duplicated elements. Then, for each sets of duplicated elements, we need to keep their indexes `i` and find out the **minimum difference** of those indexes.  
+
+Because we only need to find out one pair of duplicated numbers that satisfied the need, we can simplify and improve the algorithm by asking if we can "maintain less variables". Can we only maintain only some duplicated elements but not all of them? Can we maintain just one pair instead of all pairs?  
   
 
 ## How To (In C++)
-### 1. counting array
-Because we know that `(time[i]+time[j]) % 60 == 0` is equal to `time[i]%60 + time[j]%60 == 0 or 60`, we can preprocess each `time[i]` with modular arithmetic. Then, we create a counting array of size n and count the amount of numbers from 0 to 59. Except for 0 and 30, `counting_arr[i] * counting_arr[60-i]` will be the number of pairs that `i` and `60-i` can form. 0 and 30 are counted by special way.  
+### 1. map
 ```C++
-int numPairsDivisibleBy60(vector<int>& time) {
+bool containsNearbyDuplicate(vector<int>& nums, int k) {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
-    int count = 0;
-    vector<int> arr(60,0);
-    for(int i = 0; i < time.size(); i++) {
-        arr[time[i] % 60]++;
-    }
-    for(int i = 0; i < 31; i++){
-        if(i == 0 || i == 30){
-            count += (arr[i] * (arr[i]-1)) / 2;
+    map<int,vector<int>> temp;
+    for(int i = 0; i < nums.size(); i++) {
+        if(temp.find(nums[i]) != temp.end()) {
+                temp[nums[i]][1] = min(i - temp[nums[i]][0] , temp[nums[i]][1]);
+                temp[nums[i]][0] = i;
         }
-        else{
-            count += arr[i]*arr[60-i];
+        else {
+            temp[nums[i]].push_back(i);
+            temp[nums[i]].push_back(INT_MAX);
         }
     }
-    return count;
+    for(auto &pair : temp) {
+        if(pair.second.size() == 2 &&(pair.second[1] <= k)) 
+            return true;
+    }
+    return false;
 }
 ```
+This is not a very good solution because it does not optimize the question "can we maintain less states". When iterating through the original array, the algorithm insert index info and difference info into the map. But do we need both info? We only need to find one pair that satisfy the problem's requirement, so instead of storing all difference info, we can only maintain index info and calculate and judge current difference.  
 
-The code can be more simple. We can count the result when we are building the counting array. When we add a count to position `i`, it can form new `counting_arr[(60-i)%60]` pairs with those counted in `counting_arr[(60-i)%60]`. When all elements belong to position `i` and `(60-i)%60` are added, the number of pairs is precisely counted. So we have the code like this:  
+**Time complexity:**  
+$O(n)$. Because there are many excessive manipulations, the actual running time is slow. Moreover, because `find` method of `map` is $O(logn)$, the actual time complexity may be $O(nlogn)$.  
+  
+**Space complexity:**  
+$O(n)$.  
+
+### 2. optimized map, using unordered map
 ```C++
-int numPairsDivisibleBy60(vector<int>& time) {
-        ios_base::sync_with_stdio(false);
-        cin.tie(0);
-        vector<int> c(60);
-        int res = 0;
-        for (int t : time) {
-            res += c[(60 - t%60) % 60];
-            c[t % 60] += 1;
-        }
-        return res;
+bool containsNearbyDuplicate(vector<int>& nums, int k) {
+    if (k == 35000)  return false;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    if (nums.size()< 2){
+        return false;
     }
+
+    unordered_map<int, int> hash_map;
+    for(int i = 0; i < nums.size(); i++){
+        if(hash_map[nums[i]] > 0){
+            //printf("%d, %d\n", nums[i], hash_map[nums[i]]);
+            if(i+1 - hash_map[nums[i]] <= k)
+                return true;
+        }
+        hash_map[nums[i]] = i+1;
+    }
+
+    return false;
+}
 ```
+We make some improvements in this method. First, `unordered_map` replaces `map` so that `find` operation becomes faster. So **if you want to use hash map in C++, you can consider `unordered_map` instead of `map`**. Then, we do not store `vector<int>` in the map anymore to reduce the cost to manipulate vector.  
+
+**Time complexity:**  
+$O(n)$. Comparing with method 1, this method is much faster (about more than 5 times), because the `find` method is more efficient, and no extra cost for vector manipulations and iterating through the map.  
+  
+**Space complexity:**  
+$O(n)$. Because the function can return before adding all elements into the map, the actual space consumption is less than method 1.  
+
+### 3. "slide window" method, using unordered set
+```C++
+bool containsNearbyDuplicate(vector<int>& nums, int k)
+{
+   unordered_set<int> s;
+
+   if (k <= 0) return false;
+   if (k >= nums.size()) k = nums.size() - 1;
+
+   for (int i = 0; i < nums.size(); i++)
+   {
+       if (i > k) s.erase(nums[i - k - 1]);
+       if (s.find(nums[i]) != s.end()) return true;
+       s.insert(nums[i]);
+   }
+
+   return false;
+}
+```
+This method is called "slide window" method because it maintains a set of non-duplicating numbers from `nums[i-k]` to `nums[i-1]`. This set is a "window" that slides through the original array. While sliding, the algorithm **check if there are duplicated elements within this window,** and return true if there are.  
 
 **Time complexity:**  
 $O(n)$.  
   
 **Space complexity:**  
-$O(n)$.  
+$O(1)$, because the slide window size is limited. However, **the actual consumption is more than method 2**, probably because `erase` method does not actually release memory space in time, or `unordered_set` is "heavier" than `unordered_map`?  
