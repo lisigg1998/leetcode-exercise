@@ -25,98 +25,84 @@ Follow up:
 
 ## Problem Analysis  
 
-First, we need to find duplicated elements. Then, for each sets of duplicated elements, we need to keep their indexes `i` and find out the **minimum difference** of those indexes.  
-
-Because we only need to find out one pair of duplicated numbers that satisfied the need, we can simplify and improve the algorithm by asking if we can "maintain less variables". Can we only maintain only some duplicated elements but not all of them? Can we maintain just one pair instead of all pairs?  
+We need to find the intersection of two arrays. That is a set of elements which appears both in `nums1` and `nums2`. The two arrays are not necessary non-duplicating, but we still need to treat each elements with the same value as unique. In many programming language, set operation can be directly completed with build-in `set` data structures. We can also use other method to solve the problem.  
   
 
 ## How To (In C++)
 ### 1. map
 ```C++
-bool containsNearbyDuplicate(vector<int>& nums, int k) {
+vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
-    map<int,vector<int>> temp;
-    for(int i = 0; i < nums.size(); i++) {
-        if(temp.find(nums[i]) != temp.end()) {
-                temp[nums[i]][1] = min(i - temp[nums[i]][0] , temp[nums[i]][1]);
-                temp[nums[i]][0] = i;
-        }
-        else {
-            temp[nums[i]].push_back(i);
-            temp[nums[i]].push_back(INT_MAX);
-        }
+    cout.tie(0);
+    unordered_map<int,int> temp;
+    vector<int> res;
+    for(int i = 0; i < nums1.size(); i++) {
+        if(temp[nums1[i]] >= 0) temp[nums1[i]]++;
+        else temp[nums1[i]] = 0;
     }
-    for(auto &pair : temp) {
-        if(pair.second.size() == 2 &&(pair.second[1] <= k)) 
-            return true;
+    for(int i = 0; i < nums2.size(); i++) {
+        if(temp[nums2[i]]-- > 0) res.push_back(nums2[i]);
     }
-    return false;
+    return res;
 }
 ```
-This is not a very good solution because it does not optimize the question "can we maintain less states". When iterating through the original array, the algorithm insert index info and difference info into the map. But do we need both info? We only need to find one pair that satisfy the problem's requirement, so instead of storing all difference info, we can only maintain index info and calculate and judge current difference.  
+This method adds one of the arrays into a map and counts the number of distinct integers. Then the algorithm iterate another array and generate intersection by comparing each elements with the map. Although this is relatively fast, map consumes lots of space, and if the arrays are too large to be put into the memory, this algorithm should be further improved.  
 
 **Time complexity:**  
-$O(n)$. Because there are many excessive manipulations, the actual running time is slow. Moreover, because `find` method of `map` is $O(logn)$, the actual time complexity may be $O(nlogn)$.  
+$O(m+n)$, where m and n are the size of `nums1` and `nums2`.  
   
 **Space complexity:**  
-$O(n)$.  
+$O(n)$, where n is the size of array inserted into the map.  
 
-### 2. optimized map, using unordered map
+### 2. sorting and two pointers
 ```C++
-bool containsNearbyDuplicate(vector<int>& nums, int k) {
-    if (k == 35000)  return false;
+vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
     ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
-    if (nums.size()< 2){
-        return false;
-    }
-
-    unordered_map<int, int> hash_map;
-    for(int i = 0; i < nums.size(); i++){
-        if(hash_map[nums[i]] > 0){
-            //printf("%d, %d\n", nums[i], hash_map[nums[i]]);
-            if(i+1 - hash_map[nums[i]] <= k)
-                return true;
+    cin.tie(0);
+    cout.tie(0);
+    sort(nums1.begin(),nums1.end());
+    sort(nums2.begin(),nums2.end());
+    int i=0,j=0;
+    vector<int> res;
+    while(i < nums1.size() && j < nums2.size()){
+        if(nums1[i] < nums2[j]) i++;
+        else if (nums1[i] > nums2[j]) j++;
+        else{
+            res.push_back(nums1[i]);
+            i++; j++; 
         }
-        hash_map[nums[i]] = i+1;
     }
-
-    return false;
+    return res;
 }
 ```
-We make some improvements in this method. First, `unordered_map` replaces `map` so that `find` operation becomes faster. So **if you want to use hash map in C++, you can consider `unordered_map` instead of `map`**. Then, we do not store `vector<int>` in the map anymore to reduce the cost to manipulate vector.  
+Since the elements are all integers, we can also get the intersection by sorting and then use two pointers. First, sort the two arrays. Then, put two pointers at the beginning of two arrays. While either of the pointer does not reach the end, compare the elements they point. If they are not equal, increase the pointer pointing to the smaller number by one. If two pointers point to the elements with the same value, push the element in the result array and increase both pointers by one.  
 
 **Time complexity:**  
-$O(n)$. Comparing with method 1, this method is much faster (about more than 5 times), because the `find` method is more efficient, and no extra cost for vector manipulations and iterating through the map.  
+$O(nlogn)$. The comparison process will repeates at most n times, depending on the smallest size of two original arrays. However, the sorting algorithm has at least $O(nlogn)$ complexity, dragging the overall efficiency.  
   
 **Space complexity:**  
-$O(n)$. Because the function can return before adding all elements into the map, the actual space consumption is less than method 1.  
+$O(1)$. If original arrays do not count, and sorting algorithm also does not require extra space, this method will consumes much less space than method 1.  
 
-### 3. "slide window" method, using unordered set
+### 3. set intersection method
 ```C++
-bool containsNearbyDuplicate(vector<int>& nums, int k)
-{
-   unordered_set<int> s;
-
-   if (k <= 0) return false;
-   if (k >= nums.size()) k = nums.size() - 1;
-
-   for (int i = 0; i < nums.size(); i++)
-   {
-       if (i > k) s.erase(nums[i - k - 1]);
-       if (s.find(nums[i]) != s.end()) return true;
-       s.insert(nums[i]);
-   }
-
-   return false;
-}
+vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+        vector<int> out(nums1.size() < nums2.size() ? nums1.size():nums2.size() );
+        std::sort(nums1.begin(), nums1.end());
+        std::sort(nums2.begin(), nums2.end());
+        out.resize(std::set_intersection(nums1.begin(), nums1.end(), nums2.begin(), nums2.end(), out.begin())-out.begin());
+        return out;
+    }
 ```
-This method is called "slide window" method because it maintains a set of non-duplicating numbers from `nums[i-k]` to `nums[i-1]`. This set is a "window" that slides through the original array. While sliding, the algorithm **check if there are duplicated elements within this window,** and return true if there are.  
+C++ has build-in set operations to complete this problem, for example `set_intersection()`. It does not require value of each elements should be different, but it requires that **the object it applies must be ordered containers**. And still **we need to sort the original arrays before using this method.**  
 
 **Time complexity:**  
-$O(n)$.  
+$O(nlogn)$. Although `set_intersection()` has linear time complexity, the sorting algorithm restricts the overall efficiency.  
   
 **Space complexity:**  
-$O(1)$, because the slide window size is limited. However, **the actual consumption is more than method 2**, probably because `erase` method does not actually release memory space in time, or `unordered_set` is "heavier" than `unordered_map`?  
+$O(1)$, this method can generate result array inplace.  
+
+## Advanced questions
+1. If the given array is already sorted, method 2 and 3 are faster than method 1, and space consumption is much less.  
+2. If one array's size is significantly smaller, method 2 and 3 are faster since we do not need to iterate through two arrays. However, we can improve space complexity of method 1 by inserting the smallest array into the map.  
+3. If the memory is not large enough to contain original arrays, we can use external sort to sort the two arrays first, and then apply method 2 or 3.  
