@@ -1,34 +1,91 @@
 No.705 Design HashSet
 =========
-In a list of songs, the i-th song has a duration of time[i] seconds. 
+Design a HashSet without using any built-in hash table libraries.
 
-Return the number of pairs of songs for which their total duration in seconds is divisible by 60.  Formally, we want the number of indices i < j with (time[i] + time[j]) % 60 == 0.
+To be specific, your design should include these functions:
 
- 
+add(value): Insert a value into the HashSet. 
+contains(value) : Return whether the value exists in the HashSet or not.
+remove(value): Remove a value in the HashSet. If the value does not exist in the HashSet, do nothing.
 
-Example 1:
+Example:
 ```
-Input: [30,20,150,100,40]
-Output: 3
-Explanation: Three pairs have a total duration divisible by 60:
-(time[0] = 30, time[2] = 150): total duration 180
-(time[1] = 20, time[3] = 100): total duration 120
-(time[1] = 20, time[4] = 40): total duration 60
+MyHashSet hashSet = new MyHashSet();
+hashSet.add(1);         
+hashSet.add(2);         
+hashSet.contains(1);    // returns true
+hashSet.contains(3);    // returns false (not found)
+hashSet.add(2);          
+hashSet.contains(2);    // returns true
+hashSet.remove(2);          
+hashSet.contains(2);    // returns false (already removed)
 ```
-Example 2:
-```
-Input: [60,60,60]
-Output: 3
-Explanation: All three pairs have a total duration of 120, which is divisible by 60.
- ```
-
 Note:
 
-1.`1 <= time.length <= 60000`  
-2.`1 <= time[i] <= 500`
+All values will be in the range of` [0, 1000000]`.  
+The number of operations will be in the range of `[1, 10000]`.  
+Please do not use the built-in HashSet library.  
 
-## Problem Analysis  
+## How to (In C++)
+### linear probing approach
+```C++
+class MyHashSet {
+public:
+	/** Initialize your data structure here. */
+	vector<int> table;
+	float load;
 
+	MyHashSet() {
+		table.resize(20, -1);
+		load = 0;
+	}
+
+	void rehash() {
+		vector<int> temp(table);
+		table.clear();
+		table.resize(2 * temp.size(), -1);
+		for (int i : temp) {
+			if (i >= 0) {
+				this->add(i);
+			}
+		}
+	}
+
+	void add(int key) {
+		int c = 0;
+		while (c < table.size()) {
+			if (table[((key + c) % table.size())] == -1) {
+				table[((key + c) % table.size())] = key;
+				break;
+			}
+			else c++;
+		}
+		load++;
+		if (load / table.size() > 0.5) rehash();
+	}
+
+	void remove(int key) {
+		int c = 0;
+		while (c < table.size()) {
+			if (table[((key + c) % table.size())] == key)
+				table[((key + c) % table.size())] = -2;
+			else if (table[((key + c) % table.size())] == -1) return;
+			else c++;
+		}
+	}
+
+	/** Returns true if this set contains the specified element */
+	bool contains(int key) {
+		int c = 0;
+		while (c < table.size()) {
+			if (table[((key + c) % table.size())] == key) return true;
+			else if (table[((key + c) % table.size())] == -1) return false;
+			else c++;
+		}
+		return false;
+	}
+};
+```
 
 
 
