@@ -1,97 +1,111 @@
-No.1002 Find Common Characters
+No.1207 Unique Number of Occurrences
 =========
-Given an array A of strings made only from lowercase letters, return a list of all characters that show up in all strings within the list (including duplicates).  For example, if a character occurs 3 times in all strings but not 4 times, you need to include that character three times in the final answer.
+Given an array of integers arr, write a function that returns true if and only if the number of occurrences of each value in the array is unique.
 
-You may return the answer in any order.
-
- 
 
 Example 1:
 ```
-Input: ["bella","label","roller"]
-Output: ["e","l","l"]
+Input: arr = [1,2,2,1,1,3]
+Output: true
+Explanation: The value 1 has 3 occurrences, 2 has 2 and 3 has 1. No two values have the same number of occurrences.
 ```
 Example 2:
 ```
-Input: ["cool","lock","cook"]
-Output: ["c","o"]
+Input: arr = [1,2]
+Output: false
+```
+Example 3:
+```
+Input: arr = [-3,0,1,-3,1,1,1,-3,10,0]
+Output: true
  ```
 
-Note:
+Constraints:
 
-1 <= `A.length` <= 100
-1 <= `A[i].length` <= 100
-`A[i][j]` is a lowercase letter
+`1 <= arr.length <= 1000`
+`-1000 <= arr[i] <= 1000`
 
 ## Problem Analysis  
 
-It is natural to think that we need to count numbers of characters in each word, and then for each character we find out the minimum number of repetition in all words. There are two ways to achieve this.  
+This problem can be solved by two mapping. First, we use map to count repeating number of each interge in `arr`. Then, we use another map to count all repeating numbers. If repeating numbers do not repeat (for example, repeating number i only occurs once), the algorithm return true.  
   
 
 ## How To (In C++)
-### 1. 2d counting array
+### 1. two maps
  
 ```C++
-vector<string> commonChars(vector<string>& A) {
-    ios_base::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-    vector<vector<int>> temp(26,vector<int>(A.size(),0));
-
-    int i = 0;
-    for(string word : A){
-        for(char character : word){
-            temp[character - 'a'][i]++;
+bool uniqueOccurrences(vector<int>& arr) {
+    if(arr.size() == 1) return true;
+    // first map: count repeating number of each integer
+    unordered_map<short,short> temp;
+    for(int i : arr){
+        if(temp[i] >= 0){
+            temp[i]++;
         }
-        i++;
+        else temp[i] = 1;
     }
-
-    vector<string> res;
-    for(int i = 0; i < 26; i++){
-        int count = INT_MAX;
-        for(int j = 0; j < temp[i].size();j++){
-            if(temp[i][j] < count) count = temp[i][j];
+    // second map: count repeating numbers
+    unordered_map<short,short> temp2;
+    for(auto& pair : temp){
+        if(temp2[pair.second] >= 0){
+            temp2[pair.second]++;
         }
-        for(int k = 0; k < count; k++){
-            string s(1,char('a'+i));
-            res.push_back(s);
-        }
+        else temp2[pair.second] = 0;
     }
-    return res;
+    // redundant repeating number will cause false
+    for(auto& pair : temp2){
+        if(pair.second != 1) return false;
+    }
+    return true;
 }
 ```
-Pay attention to the way how **`char` type can transform to `string` type**.  
+There is a second version of this type of method. **The second map can be replaced by a set.** We can either check if `map.size() == set.size()`, or return false when`s.insert(element).second == false`.  
 
 **Time complexity:**  
-$O(nk)$, where n is the number of words and k is the average number of characters in a word.    
-  
-**Space complexity:**  
-$O(n)$, because we have 26 integer vectors with size n.  
-
-### 2. only two counting arrays
-
+$O(n)$. The code above will go through 3n loops in the worst case. The code below should be better:
 ```C++
-vector<string> commonChars(vector<string>& A) {
-    ios_base::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-    vector<int> cnt(26, INT_MAX);
-    vector<string> res;
-    for (auto s : A) {
-        vector<int> cnt1(26, 0);
-        for (auto c : s) ++cnt1[c - 'a'];
-        for (auto i = 0; i < 26; ++i) cnt[i] = min(cnt[i], cnt1[i]);
-    }
-    for (auto i = 0; i < 26; ++i)
-        for (auto j = 0; j < cnt[i]; ++j) res.push_back(string(1, i + 'a')); 
-    return res;
+bool uniqueOccurrences(vector<int>& arr) {
+  unordered_map<int, int> m;
+  unordered_set<int> s;
+  for (auto n : arr) ++m[n];
+  for (auto& p : m)
+      if (!s.insert(p.second).second) return false;
+  return true;
 }
 ```
-                                 
-If we think about it, we just need to maintain the minimum repeating number of each character in each word. Instead of a 2d array, we just use two 1d arrays. One stores the current minimum counts, and one stores the counts of current words. In each iteration, we update the current minimum counts.  
-
-**Time complexity:**  
-$O(nk)$, where n is the number of words and k is the average number of characters in a word.    
   
 **Space complexity:**  
-$O(1)$, because we only two arrays with size 26.  
+$O(m)$, where m is the number of unique integers.  
+
+### 2. counting sort
+
+This specific question gives us the range of input and the maximum size of input. In this case we can definitely use counting sort. We first count integers in a counting array, and then sort the counting array. Finally we examine the sorted array to see if two adjacent elements (namely two counts) are the same.  
+```C++
+bool uniqueOccurrences(vector<int>& arr) {
+  short m[2001] = {};
+  for (auto n : arr) ++m[n + 1000];  // counting
+  sort(begin(m), end(m));  // sorting
+  for (auto i = 1; i < 2001; ++i)
+      if (m[i] && m[i] == m[i - 1]) return false;  // m[i] must > 0 (have occurred in arr)
+  return true;
+}
+```
+Because we know the maximum size of input, we don't even need to sort. Check the following code:  
+```C++
+bool uniqueOccurrences(vector<int>& arr) {
+    short m[2001] = {}, s[1001] = {};
+    for (auto n : arr) ++m[n + 1000];
+    for (auto i = 0; i < 2001; ++i)
+        if (m[i] && ++s[m[i]] > 1) return false;  // ++s: increase before comparing
+    return true;
+}
+```
+The repeating time must be less than 1001, so we can use another counting array to count the repeating time.  
+**Method 2 is actually a specification of method 1.** The two map (or map and set) are two "counting arrays" to some extent.  
+
+**Time complexity:**  
+First solution: $O(n + m log m)$.  
+Second solution: $O(n)$.  
+  
+**Space complexity:**  
+$O(m)$, where m is the number of unique integers.  
