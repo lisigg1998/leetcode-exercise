@@ -70,7 +70,7 @@ $O(n)$, because we have 26 integer vectors with size n.
 
 ### 2. only two counting arrays
 
-'''C++
+```C++
 vector<string> commonChars(vector<string>& A) {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
