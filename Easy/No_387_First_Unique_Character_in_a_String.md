@@ -1,67 +1,80 @@
 No.387 First Unique Character in a String
 =========
-You are given an array of strings words and a string chars.
+Given a string, find the first non-repeating character in it and return it's index. If it doesn't exist, return -1.
 
-A string is good if it can be formed by characters from chars (each character can only be used once).
-
-Return the sum of lengths of all good strings in words.
-
- 
-
-Example 1:
+Examples:
 ```
-Input: words = ["cat","bt","hat","tree"], chars = "atach"
-Output: 6
-Explanation: 
-The strings that can be formed are "cat" and "hat" so the answer is 3 + 3 = 6.
-```
-Example 2:
-```
-Input: words = ["hello","world","leetcode"], chars = "welldonehoneyr"
-Output: 10
-Explanation: 
-The strings that can be formed are "hello" and "world" so the answer is 5 + 5 = 10.
- ```
+s = "leetcode"
+return 0.
 
-Note:
-
-`1 <= words.length <= 1000`
-`1 <= words[i].length, chars.length <= 100`
-All strings contain lowercase English letters only.
+s = "loveleetcode",
+return 2.
+```
+Note: You may assume the string contain only lowercase letters.
 
 ## Problem Analysis  
 
-This question is among many questions that can be solved by "counting array" or "map/set". Since we **know the input range** we can just uset counting array.  
+To find all non-repeating characters, we can also use counting method. Then we need to find the non-repeating character with the smallest index. We can solve this "dynamically" (find when we need the value) or "statically" (already store the value before we use).
   
 
 ## How To (In C++)
-### 1. counting array
+### 1. counting array, "dynamically"
  
 ```C++
-int countCharacters(vector<string>& words, string chars) {
+int firstUniqChar(string s) {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
-    int res=0;
-    vector<int> count_chars(26,0);
-    vector<int> count_word(26,0);
-    for(const auto& i: chars) count_chars[i-'a']++;
-    for(const auto& word: words){
-        for(const auto& i: word) count_word[i-'a']++;  // count each word
-        bool judge = 1; 
-        for(int i = 0 ;i < 26; i++){
-            if(count_chars[i] < count_word[i]) judge &= 0;  // judge = false if one does not match
-            count_word[i] = 0;  // reinitialize count_word
+    if(s.size() == 0) return -1;
+    if(s.size() == 1) return 0;
+    vector<int> count(26,0);
+    for(const auto& c : s) count[c-'a']++; // counting characters
+    int res = INT_MAX;
+    for(int i = 0; i < 26; i++){
+        if(count[i] == 1){
+            int pos = s.find(char(i+'a'));
+            if(pos != string::npos) res = min(res, pos);
         }
-        res = judge ? res + word.size() : res;
     }
-    return res;
+    return (res < INT_MAX) ? res : -1;
 }
 ```
-No special algorithm technique here. Pay attention to `const auto&` when iterating through a `string`. **Using reference will make the code more space efficient**.  
+This method counts and finds unique characters first. Then, it use `find` to obtain smallest index of unique character. Notice that by using `find`, we avoid traversing the string `s` again.  
 
 **Time complexity:**  
-$O(nk)$, where n is the number of words and k is the average number of characters in a word.    
+$O(n)$, where n is the number of characters in a word.  
   
 **Space complexity:**  
-$O(1)$, because we have 2 integer arrays with size 26.  
+$O(1)$.  
+
+### 2. unordered map, "statically"
+```C++
+int firstUniqChar(string s) {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    if(s.size() == 0) return -1;
+    if(s.size() == 1) return 0;
+    unordered_map<char, pair<int,int>> count;   // pair.first is count, pair.second is the first appearing index
+    int range = s.size();
+    for(int i = 0; i < range; i++){
+        count[s[i]].first++;
+        count[s[i]].second = i;
+    }
+
+    int res = INT_MAX;
+    for(const auto& a : count){
+        if(a.second.first == 1){
+            res = min(res, a.second.second);
+        }
+    }
+    return (res < INT_MAX) ? res : -1;
+}
+ ```
+ This method uses an `unordered_map` to store the character, count and its first appearing index. We obtain all those information in one traversing process. Then we just need to go through the map to find the smallest index. 
+ 
+ **Time complexity:**  
+$O(n)$, where n is the number of characters in a word. Although this method just go through the string once, it is slower than method 1.  
+  
+**Space complexity:**  
+$O(1)$.  
