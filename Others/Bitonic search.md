@@ -159,7 +159,7 @@ int bitonicSearch(vector<int>& nums, int key) {
 
 **Time complexity:**  
   
-$O(logn^2)$, it takes only `~logn` times of comparison operations.  
+$O(log^2n)$, it takes more comparisons than method 1, but it's more easy to understand and need not to find the local maximum.  
   
 **Space complexity:**
   
