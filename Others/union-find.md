@@ -21,8 +21,6 @@ mathematical sets.
 
 ## Problem Analysis  
 
-### 1. Define the problem
-
 We need to specify the requirements before anything. For this problem, we can find two core requirements:  
 ```
 1. Define a sort of data structure to store current known connections;
@@ -35,8 +33,44 @@ The book provides a set of API to deal with the requirements:
 |---------|------------------------------------------|
 |`UF(int n)`| To initialize n sites with integer names (0 to N-1)
 |`void union(int p, int q)`| add connection between p and q
-|`int find(int p) `| set identifier for p (0 to N-1)
+|`int find(int p) `| component identifier for p (0 to N-1)
 |`bool connected(int p, int q)` | return true if p and q are in the same component
 |`int count() `| number of components
+
+Since the node and the component identifier are both represented by an integer, we can store the connection information like this:  
+  
+Assume we know the domain of integers in the input, and assume it is `[0,n-1]`. We use one node of a component(the "set") as the identifier. Then we can create an array `id` of size n, `id[i]` stores the identifier of node i.  
+
+In this case, we have the prototype of `UF` class as follows:  
+```C++
+class UF
+{
+protected:
+	vector<int> id;	// id[i] stores the identifier of node i
+	int Count;	// number of connected components
+
+public:
+	virtual ~UF() { cout << "Base destroyed." << endl; }
+	virtual void Union(int p, int q) = 0; // do union operation
+	virtual int find(int p) = 0;  // return the identifier of p
+	bool connected(int p, int q) { return find(p) == find(q); }
+	int count() { return Count; }
+    
+	void printId() // print current connection information, not necessary
+        {    
+		for (int i = 0; i < id.size(); i++) {
+			if (i != id.size() - 1) cout << id[i] << " ";
+			else cout << id[i] << endl;
+		}
+	}
+
+};
+```
+Now we need to implement the `find()` and `Union()` method. To analyze the complexity, we let **each array access operation as the primary operation.**  
+
+## How To (In C++)
+### 1. Quick-find
+
+
 
 
