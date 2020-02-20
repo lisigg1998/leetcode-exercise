@@ -33,9 +33,7 @@ The book provides a set of API to deal with the requirements:
 
 |`class UF`||
 |---------|------------------------------------------|
-|```C++
-UF(int n)
-```| To initialize n sites with integer names (0 to N-1)
+|`UF(int n)`| To initialize n sites with integer names (0 to N-1)
 |`void union(int p, int q)`| add connection between p and q
 |`int find(int p) `| set identifier for p (0 to N-1)
 |`bool connected(int p, int q)` | return true if p and q are in the same component
